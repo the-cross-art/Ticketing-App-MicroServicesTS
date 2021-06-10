@@ -13,7 +13,17 @@
 
 ## App Structure
 
-![Screenshot (52)](https://user-images.githubusercontent.com/63959831/121418672-d323b500-c988-11eb-846d-318da81002ed.png)
+### Overall Function
+
+![Screenshot (52)](https://user-images.githubusercontent.com/63959831/121482245-94264b80-c9ea-11eb-90fd-43800b56bd30.png)
+
+### App Connection
+
+![Screenshot (53)](https://user-images.githubusercontent.com/63959831/121482253-95f00f00-c9ea-11eb-9855-88be53a747a0.png)
+
+### Your Local Machine Function
+
+![Screenshot (55)](https://user-images.githubusercontent.com/63959831/121482256-9688a580-c9ea-11eb-9a2c-cfec8950f80a.png)
 
 [TypeScript](https://www.typescriptlang.org/) is a language for application-scale JavaScript. TypeScript adds optional types to JavaScript that support tools for large-scale JavaScript applications for any browser, for any host, on any OS. TypeScript compiles to readable, standards-based JavaScript. Try it out at the [playground](https://www.typescriptlang.org/play/), and stay up to date via [our blog](https://blogs.msdn.microsoft.com/typescript) and [Twitter account](https://twitter.com/typescript).
 

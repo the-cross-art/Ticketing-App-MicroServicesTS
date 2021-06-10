@@ -5,10 +5,12 @@ deploy:
     manifests:
       - ./infra/k8s/*
 build:
-  local:
-    push: false
+  # local:
+  #   push: false
+  googleCloudBuild:
+    projectId: ticketing-imran-dev
   artifacts:
-    - image: thecrossart/auth
+    - image: us.gcr.io/ticketing-imran-dev/auth
       context: auth
       docker:
         dockerfile: Dockerfile
