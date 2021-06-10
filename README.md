@@ -1,6 +1,6 @@
-# Ticketing App
+# 🎟️ Ticketing App 🎫
 
-## Microservices in MERN
+## 🧮 Microservices in MERN
 
 <br />
 
@@ -25,6 +25,8 @@
 
 ![Screenshot (55)](https://user-images.githubusercontent.com/63959831/121482256-9688a580-c9ea-11eb-9a2c-cfec8950f80a.png)
 
+# 🛰️ SetUp TypeScript
+
 [TypeScript](https://www.typescriptlang.org/) is a language for application-scale JavaScript. TypeScript adds optional types to JavaScript that support tools for large-scale JavaScript applications for any browser, for any host, on any OS. TypeScript compiles to readable, standards-based JavaScript. Try it out at the [playground](https://www.typescriptlang.org/play/), and stay up to date via [our blog](https://blogs.msdn.microsoft.com/typescript) and [Twitter account](https://twitter.com/typescript).
 
 Find others who are using TypeScript at [our community page](https://www.typescriptlang.org/community/).
@@ -42,23 +44,6 @@ For our nightly builds:
 ```bash
 npm install -g typescript@next
 ```
-
-## Contribute
-
-There are many ways to [contribute](https://github.com/microsoft/TypeScript/blob/main/CONTRIBUTING.md) to TypeScript.
-
-- [Submit bugs](https://github.com/microsoft/TypeScript/issues) and help us verify fixes as they are checked in.
-- Review the [source code changes](https://github.com/microsoft/TypeScript/pulls).
-- Engage with other TypeScript users and developers on [StackOverflow](https://stackoverflow.com/questions/tagged/typescript).
-- Help each other in the [TypeScript Community Discord](https://discord.gg/typescript).
-- Join the [#typescript](https://twitter.com/search?q=%23TypeScript) discussion on Twitter.
-- [Contribute bug fixes](https://github.com/microsoft/TypeScript/blob/main/CONTRIBUTING.md).
-- Read the archived language specification ([docx](https://github.com/microsoft/TypeScript/blob/main/doc/TypeScript%20Language%20Specification%20-%20ARCHIVED.docx?raw=true),
-  [pdf](https://github.com/microsoft/TypeScript/blob/main/doc/TypeScript%20Language%20Specification%20-%20ARCHIVED.pdf?raw=true), [md](https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md)).
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see
-the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com)
-with any additional questions or comments.
 
 ## Documentation
 
@@ -89,28 +74,6 @@ npm install -g gulp
 npm ci
 ```
 
-Use one of the following to build and test:
-
-```
-gulp local             # Build the compiler into built/local.
-gulp clean             # Delete the built compiler.
-gulp LKG               # Replace the last known good with the built one.
-                       # Bootstrapping step to be executed when the built compiler reaches a stable state.
-gulp tests             # Build the test infrastructure using the built compiler.
-gulp runtests          # Run tests using the built compiler and test infrastructure.
-                       # You can override the specific suite runner used or specify a test for this command.
-                       # Use --tests=<testPath> for a specific test and/or --runner=<runnerName> for a specific suite.
-                       # Valid runners include conformance, compiler, fourslash, project, user, and docker
-                       # The user and docker runners are extended test suite runners - the user runner
-                       # works on disk in the tests/cases/user directory, while the docker runner works in containers.
-                       # You'll need to have the docker executable in your system path for the docker runner to work.
-gulp runtests-parallel # Like runtests, but split across multiple threads. Uses a number of threads equal to the system
-                       # core count by default. Use --workers=<number> to adjust this.
-gulp baseline-accept   # This replaces the baseline test results with the results obtained from gulp runtests.
-gulp lint              # Runs eslint on the TypeScript source.
-gulp help              # List the above commands.
-```
-
 ## Usage
 
 ```bash
@@ -120,3 +83,114 @@ node built/local/tsc.js hello.ts
 ## Roadmap
 
 For details on our planned features and future direction please refer to our [roadmap](https://github.com/microsoft/TypeScript/wiki/Roadmap).
+
+# 🚀 How to Run the App with `Skaffold`
+
+This is a showcase for Skaffold with create-react-app.
+
+## Why?
+
+If you want to develop a react app and deploy on kubernetes, you want fast feedback cycles.
+Skaffold is a dedicated tool to help with this _inner dev-loop_ and it offers some nifty optimizations around script languages.
+This showcase demonstrates how to get this working efficiently.
+
+## How?
+
+These steps explain how this repository was created.
+Use this as a guide to get started with new projects.
+
+1.  Run `create-react-app` like so:
+
+        npx create-react-app . --template typescript --use-npm
+
+    For instructions how to work with `create-react-app` go [here](https://create-react-app.dev/docs/getting-started).
+
+1.  Add a `Dockerfile` to instruct the container builder how to construct your container:
+
+    ```Dockerfile
+    FROM node:12-alpine
+
+    WORKDIR /app
+    EXPOSE 3000
+    CMD ["npm", "run", "start"]
+
+    COPY package* ./
+    RUN npm ci
+    COPY . .
+    ```
+
+1.  Add a `.dockerignore` file to ignore unwanted files. This is important so that Skaffold knows what files it may ignore:
+
+    ```.dockerignore
+    .git
+    node_modules
+    **/*.swp
+    **/*.tsx~
+    **/*.swn
+    **/*.swo
+    ```
+
+1.  Add a kubernetes manifest for your app
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: create-react-app
+    spec:
+      selector:
+        matchLabels:
+          app: create-react-app
+      template:
+        metadata:
+          labels:
+            app: create-react-app
+        spec:
+          containers:
+            - name: create-react-app
+              image: skaffold-create-react-app
+              ports:
+                - containerPort: 3000
+    ```
+
+1.  Run `skaffold init` and add the following items:
+
+    - Tell Skaffold to copy `.ts` or `.tsx` files into your container instead of rebuilding:
+
+      ```yaml
+      build:
+        artifacts:
+          - image: skaffold-create-react-app
+            sync:
+              infer:
+                - "**/*.ts"
+                - "**/*.tsx"
+                - "**/*.css"
+      ```
+
+      This sync mode works entirely different to docker-compose with a local volume, as it copies the files into the running container.
+      The advantage is that this will work no matter how your kubernetes cluster is set up, be it remote or local.
+
+    - Tell Skaffold which port to forward so that you can access your app on localhost:
+
+      ```yaml
+      portForward:
+        - resourceType: deployment
+          resourceName: create-react-app
+          port: 3000
+      ```
+
+1.  Start developing with
+
+        skaffold dev --port-forward
+
+    This last command assumes that you have set up a kubernetes cluster. If you have not, take a look at [minikube](https://github.com/kubernetes/minikube).
+
+1.  Access your app on `http://localhost:3000`.
+    When you make changes, the changed files should be sync'ed into the container and the node watcher should pick up the changes.
+    In particular, the container should _not rebuild_.
+    If it does nevertheless, run `skaffold dev -v debug` and look out for temporary files which should be added to `.dockerignore`.
+
+> :warning: Note that the container runs `npm run start` which is the dev mode. When going to production, you should run `npm run build` and build a dedicated container.
+
+**Happy hacking! ❤️**
