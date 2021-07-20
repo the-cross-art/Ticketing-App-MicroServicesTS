@@ -25,223 +25,114 @@
 
 ![Screenshot (55)](https://user-images.githubusercontent.com/63959831/121482256-9688a580-c9ea-11eb-9a2c-cfec8950f80a.png)
 
-# Quickstart
+# Ticketing
 
-**Requirements:** [ingress-nginx](https://kubernetes.github.io/ingress-nginx/deploy/) enabled, [skaffold](https://skaffold.dev/)
+## ❔ About
 
-- GCE/GCK:
-  - `skaffold dev`
-- Minikube
-  1. Rebuild images: `docker build -f <path/to/Dockerfile> -t <tag> .`
-  2. Push to Docker hub: `docker push -t <tag>`
-  3. Update image values in [k8s config files](./infra/k8s)
-  4. `skaffold dev`
+Microservices Ticketing Application to sell and buy tickets
 
-## Features
+## 🛠 Techs
 
-- Production grade authentication
-- Production grade event bus
-- Authenticated users can list a ticket for an event for sale
-- Authenticated users can buy tickets listed by others
-- Athenticated user can edit the tickets their listed
-- Ticket Lock with timer
-  - "Lock" ticket for 15 minutes when user attempts to purchase it
-  - No other user can purchase a ticket while it is locked
-  - Ticket price can't be edited while it is locked
+The list of the main techs used in this project.
 
-## Resources
+### Backend
 
-| User             | Ticket                | Order                                              | Charge                           |
-| ---------------- | --------------------- | -------------------------------------------------- | -------------------------------- |
-| email: string    | title: string         | userId: ref to User                                | orderId: ref to Order            |
-| password: string | price: number         | status: Created/Canceled/AwaitingPayment/Completed | status: Created/Completed/Failed |
-|                  | userId: ref to User   | ticketId: Ref to Ticket                            | amount: number                   |
-|                  | orderId: ref to Order | expiresAt: Date                                    | stripeId: string                 |
-|                  |                       |                                                    | stripeRefundId: string           |
+- [Node.js](https://nodejs.org/en/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Express](https://expressjs.com/)
+- [NATS Streaming Server](https://docs.nats.io/nats-streaming-concepts/intro)
+- [Mongo](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
+- [Redis](https://redis.io/)
+- [JWT - Json Web Tokens](https://jwt.io/)
+- [Stripe for Payments](https://stripe.com/)
+- [Ingress Nginx](https://kubernetes.github.io/ingress-nginx/)
+- [Docker](https://www.docker.com/)
+- [Kubernetes](https://kubernetes.io/)
 
-## Services
+### Frontend
 
-| Service               |                                                                                               |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| auth                  | sign-up/in/out                                                                                |
-| tickets               | Ticket creation/editing                                                                       |
-| orders                | Order creation/editing                                                                        |
-| expiration            | Watched for order to be created. Cancels them after 15 minutes                                |
-| payments              | Handles credit card payments. Cancels orders if payment fails, completes if payment succeeds. |
-| NATS Streaming Server | "event bus"                                                                                   |
+- [Next.js](https://nextjs.org/)
+- [React](https://pt-br.reactjs.org/)
 
-## Events
+### CI/CD
 
-## Tests
+- [Github](https://github.com/)
+- [Github Actions](https://github.com/features/actions)
 
-In each `/services/<service>` folders: `yarn && yarn run test`
+### Hosting
 
-# 🛰️ SetUp TypeScript
+- [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
 
-[TypeScript](https://www.typescriptlang.org/) is a language for application-scale JavaScript. TypeScript adds optional types to JavaScript that support tools for large-scale JavaScript applications for any browser, for any host, on any OS. TypeScript compiles to readable, standards-based JavaScript. Try it out at the [playground](https://www.typescriptlang.org/play/), and stay up to date via [our blog](https://blogs.msdn.microsoft.com/typescript) and [Twitter account](https://twitter.com/typescript).
+## ⚙ How to Install and Start
 
-Find others who are using TypeScript at [our community page](https://www.typescriptlang.org/community/).
+To install and start the ticketing app follow the steps below:
 
-## Installing
+### Pre-Requirements Installations
 
-For the latest stable version:
+- [Docker Desktop](https://docs.docker.com/get-docker/)
+- Enable Kubernetes in the Docker Desktop
+- [Install Ingress Nginx](https://kubernetes.github.io/ingress-nginx/deploy/)
+- [Install Skaffold](https://skaffold.dev/docs/install/) Optional
+- [Create a Stripe Account](https://dashboard.stripe.com/register) Optional
+- Add tickets.com to your hosts file pointing to 127.0.0.1 (Mac /etc/hosts and Win c:\windows\system32\drivers\etc\hosts)
 
-```bash
-npm install -g typescript
+### Installation
+
+Clone the Repository:
+
+```
+git clone https://github.com/the-cross-art/Ticketing-App-MicroServicesTS
 ```
 
-For our nightly builds:
+### Services
 
-```bash
-npm install -g typescript@next
+Open the cloned repository na navigate to the root folder
+
+```
+cd ./ticketing/
 ```
 
-## Documentation
-
-- [TypeScript in 5 minutes](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
-- [Programming handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [Homepage](https://www.typescriptlang.org/)
-
-## Building
-
-In order to build the TypeScript compiler, ensure that you have [Git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/) installed.
-
-Clone a copy of the repo:
+#### Kubernets Secrets
 
 ```bash
-git clone https://github.com/microsoft/TypeScript.git
+# Create the required secrets
+> kubectl create secret generic jwt-secret --from-literal=JWT_KEY=123456
+# If you have Stripe Account
+> kubectl create secret generic stripe-secret --from-literal STRIPE_KEY=<REPLACE_HERE_YOUR_PRIVATE_STRIPE_KEY>
+# If you don't have a Stripe Account
+> kubectl create secret generic stripe-secret --from-literal STRIPE_KEY=123456
 ```
 
-Change to the TypeScript directory:
+#### Skaffold
 
 ```bash
-cd TypeScript
+# If Skaffold is installed
+> skaffold dev
+
+# If Skaffold is not installed
+> kubectl apply -f infra/k8s-dev
+> kubectl apply -f infra/k8s
 ```
 
-Install [Gulp](https://gulpjs.com/) tools and dev dependencies:
+#### Open your browser
 
-```bash
-npm install -g gulp
-npm ci
+```
+http://ticketing.dev
 ```
 
-## Usage
+## 🥅 Plans
 
-```bash
-node built/local/tsc.js hello.ts
-```
+- Style the frontend
+- Implement email service
+-
 
-## Roadmap
+## 📜 License
 
-For details on our planned features and future direction please refer to our [roadmap](https://github.com/microsoft/TypeScript/wiki/Roadmap).
+This project is under MIT License
 
-# 🚀 How to Run the App with `Skaffold`
+## Special Thanks
 
-This is a showcase for Skaffold with create-react-app.
+To Stephen Grider for the amazing [Microservices Course](https://www.udemy.com/course/microservices-with-node-js-and-react/)
 
-## Why?
-
-If you want to develop a react app and deploy on kubernetes, you want fast feedback cycles.
-Skaffold is a dedicated tool to help with this _inner dev-loop_ and it offers some nifty optimizations around script languages.
-This showcase demonstrates how to get this working efficiently.
-
-## How?
-
-These steps explain how this repository was created.
-Use this as a guide to get started with new projects.
-
-1.  Run `create-react-app` like so:
-
-        npx create-react-app . --template typescript --use-npm
-
-    For instructions how to work with `create-react-app` go [here](https://create-react-app.dev/docs/getting-started).
-
-1.  Add a `Dockerfile` to instruct the container builder how to construct your container:
-
-    ```Dockerfile
-    FROM node:12-alpine
-
-    WORKDIR /app
-    EXPOSE 3000
-    CMD ["npm", "run", "start"]
-
-    COPY package* ./
-    RUN npm ci
-    COPY . .
-    ```
-
-1.  Add a `.dockerignore` file to ignore unwanted files. This is important so that Skaffold knows what files it may ignore:
-
-    ```.dockerignore
-    .git
-    node_modules
-    **/*.swp
-    **/*.tsx~
-    **/*.swn
-    **/*.swo
-    ```
-
-1.  Add a kubernetes manifest for your app
-
-    ```yaml
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: create-react-app
-    spec:
-      selector:
-        matchLabels:
-          app: create-react-app
-      template:
-        metadata:
-          labels:
-            app: create-react-app
-        spec:
-          containers:
-            - name: create-react-app
-              image: skaffold-create-react-app
-              ports:
-                - containerPort: 3000
-    ```
-
-1.  Run `skaffold init` and add the following items:
-
-    - Tell Skaffold to copy `.ts` or `.tsx` files into your container instead of rebuilding:
-
-      ```yaml
-      build:
-        artifacts:
-          - image: skaffold-create-react-app
-            sync:
-              infer:
-                - "**/*.ts"
-                - "**/*.tsx"
-                - "**/*.css"
-      ```
-
-      This sync mode works entirely different to docker-compose with a local volume, as it copies the files into the running container.
-      The advantage is that this will work no matter how your kubernetes cluster is set up, be it remote or local.
-
-    - Tell Skaffold which port to forward so that you can access your app on localhost:
-
-      ```yaml
-      portForward:
-        - resourceType: deployment
-          resourceName: create-react-app
-          port: 3000
-      ```
-
-1.  Start developing with
-
-        skaffold dev --port-forward
-
-    This last command assumes that you have set up a kubernetes cluster. If you have not, take a look at [minikube](https://github.com/kubernetes/minikube).
-
-1.  Access your app on `http://localhost:3000`.
-    When you make changes, the changed files should be sync'ed into the container and the node watcher should pick up the changes.
-    In particular, the container should _not rebuild_.
-    If it does nevertheless, run `skaffold dev -v debug` and look out for temporary files which should be added to `.dockerignore`.
-
-> :warning: Note that the container runs `npm run start` which is the dev mode. When going to production, you should run `npm run build` and build a dedicated container.
-
-**Happy hacking! ❤️**
+Made with ❤️ by Imran Nazir
