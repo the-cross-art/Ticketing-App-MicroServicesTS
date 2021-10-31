@@ -8,9 +8,9 @@ build:
   # local:
   #   push: false
   googleCloudBuild:
-    projectId: ticketing-imran-dev
+    projectId: ticketing-imran-dev-330208
   artifacts:
-    - image: gcr.io/ticketing-imran-dev/auth
+    - image: gcr.io/ticketing-imran-dev-330208/auth
       context: auth
       docker:
         dockerfile: Dockerfile
@@ -18,7 +18,7 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-    - image: gcr.io/ticketing-imran-dev/client
+    - image: gcr.io/ticketing-imran-dev-330208/client
       context: client
       docker:
         dockerfile: Dockerfile
@@ -26,7 +26,7 @@ build:
         manual:
           - src: "**/*.js"
             dest: .
-    - image: gcr.io/ticketing-imran-dev/tickets
+    - image: gcr.io/ticketing-imran-dev-330208/tickets
       context: tickets
       docker:
         dockerfile: Dockerfile
