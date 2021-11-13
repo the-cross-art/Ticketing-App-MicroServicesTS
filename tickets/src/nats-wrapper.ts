@@ -20,9 +20,9 @@ class NatsWrapper {
         resolve();
       });
       this.client.on('error', (err) => {
-        reject(err);
+        reject(err); 
       });
-    });
+    }); 
   }
 }
 
