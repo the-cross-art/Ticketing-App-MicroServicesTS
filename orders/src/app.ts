@@ -5,7 +5,7 @@ import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError, currentUser } from '@modelclubauth/common';
 
 import { deleteOrderRouter } from './routes/delete';
-import { indexOrderRouter } from './routes';
+import { indexOrderRouter } from './routes/index';
 import { newOrderRouter } from './routes/new';
 import { showOrderRouter } from './routes/show';
 
